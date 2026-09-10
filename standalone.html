@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Circle - Collaborative Study Rooms</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    #app {
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      color: #667eea;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    h2 {
+      color: #333;
+      font-size: 2em;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    h3 {
+      color: #667eea;
+      font-size: 1.3em;
+      margin-top: 15px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #764ba2;
+      font-size: 1.2em;
+      margin-bottom: 30px;
+    }
+
+    .welcome-box {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      border-left: 4px solid #667eea;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 600;
+      margin: 10px 5px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      width: 100%;
+      margin: 15px 0;
+    }
+
+    .btn-secondary {
+      background: #e0e0e0;
+      color: #333;
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .btn-info {
+      background: #3b82f6;
+      color: white;
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+      width: 100%;
+      margin: 15px 0;
+    }
+
+    .btn-doubt {
+      background: #f59e0b;
+      color: white;
+      width: 100%;
+      margin: 5px 0;
+      padding: 10px;
+    }
+
+    .btn-approve {
+      background: #10b981;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 2px;
+    }
+
+    .btn-reject {
+      background: #ef4444;
+      color: white;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 2px;
+    }
+
+    .subjects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    .subject-btn {
+      padding: 15px;
+      border: 2px solid #667eea;
+      background: white;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: all 0.3s;
+    }
+
+    .subject-btn:hover {
+      background: #667eea;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .room-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .form-group {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      color: #667eea;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .form-group p {
+      margin: 5px 0;
+    }
+
+    .room-code-display {
+      background: #f0f4ff;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .code-box {
+      background: white;
+      border: 3px dashed #667eea;
+      padding: 15px;
+      margin: 10px 0;
+      font-size: 2em;
+      font-weight: bold;
+      color: #667eea;
+      border-radius: 8px;
+      font-family: monospace;
+      letter-spacing: 2px;
+    }
+
+    .admin-section {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .timer-controls input {
+      flex: 1;
+    }
+
+    .timer-controls button {
+      flex: 1;
+    }
+
+    .request-item {
+      background: white;
+      padding: 10px;
+      margin: 5px 0;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 4px solid #667eea;
+    }
+
+    .request-info {
+      flex: 1;
+    }
+
+    .request-info p {
+      margin: 2px 0;
+      font-size: 0.9em;
+    }
+
+    .request-buttons {
+      display: flex;
+      gap: 5px;
+    }
+
+    .group-status {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .group-info {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      border-top: 3px solid #667eea;
+    }
+
+    .study-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #groupLabel {
+      color: #764ba2;
+      font-size: 1.1em;
+      font-weight: 600;
+    }
+
+    .timer-display {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #timerValue {
+      font-size: 3em;
+      font-weight: bold;
+      font-family: monospace;
+    }
+
+    .main-content {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .section {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+    }
+
+    .members-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .member-badge {
+      background: #667eea;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: 600;
+    }
+
+    .chat-box {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 15px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+
+    .chat-message {
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 8px;
+      background: #f0f4ff;
+      color: #333;
+      word-wrap: break-word;
+    }
+
+    .chat-message.assistant {
+      background: #e0e7ff;
+      color: #667eea;
+      font-weight: 600;
+    }
+
+    .chat-message.user {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .chat-input-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .chat-input-group input {
+      flex: 1;
+      margin: 0;
+    }
+
+    .chat-input-group button {
+      width: auto;
+      margin: 0;
+      padding: 10px 20px;
+    }
+
+    .doubt-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .doubt-feed {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 10px;
+      max-height: 150px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+
+    .doubt-item {
+      padding: 8px;
+      margin: 5px 0;
+      background: #fef3c7;
+      border-radius: 5px;
+      border-left: 3px solid #f59e0b;
+      font-size: 0.9em;
+    }
+
+    .messages-box {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 15px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+    }
+
+    .message-item {
+      margin: 8px 0;
+      padding: 10px;
+      background: #f0f4ff;
+      border-radius: 8px;
+      border-left: 3px solid #667eea;
+    }
+
+    .message-item .user-name {
+      font-weight: 600;
+      color: #667eea;
+      font-size: 0.9em;
+    }
+
+    .message-item .message-text {
+      margin-top: 5px;
+      color: #333;
+    }
+
+    .message-input-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .message-input-group input {
+      flex: 1;
+      margin: 0;
+    }
+
+    .message-input-group button {
+      width: auto;
+      margin: 0;
+      padding: 10px 20px;
+    }
+
+    .center-content {
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 1.8em;
+      }
+
+      h2 {
+        font-size: 1.5em;
+      }
+
+      .subjects-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .group-status {
+        grid-template-columns: 1fr;
+      }
+
+      #timerValue {
+        font-size: 2em;
+      }
+
+      .doubt-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .btn-doubt {
+        flex: 1;
+        min-width: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen" class="screen active">
+      <div class="container">
+        <h1>📚 Study Circle</h1>
+        <p class="subtitle">Collaborative Online Study Rooms</p>
+        
+        <div class="welcome-box">
+          <p>Welcome to Study Circle! A platform for students to study together in private groups.</p>
+          <button class="btn btn-primary" onclick="goToNameEntry()">Get Started</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Name Entry Screen -->
+    <div id="nameScreen" class="screen">
+      <div class="container">
+        <h2>Enter Your Name</h2>
+        <input type="text" id="userName" placeholder="Your full name" class="input-field">
+        <button class="btn btn-primary" onclick="goToSubjectSelection()">Next</button>
+      </div>
+    </div>
+
+    <!-- Subject Selection Screen -->
+    <div id="subjectScreen" class="screen">
+      <div class="container">
+        <h2>Select Your Study Subject</h2>
+        <div class="subjects-grid">
+          <button class="subject-btn" onclick="selectSubject('Medical Board Prep')">🏥 Medical Board Prep</button>
+          <button class="subject-btn" onclick="selectSubject('Calculus')">📖 Calculus</button>
+          <button class="subject-btn" onclick="selectSubject('Coding')">💻 Coding</button>
+          <button class="subject-btn" onclick="selectSubject('Accounting')">📊 Accounting</button>
+          <button class="subject-btn" onclick="selectSubject('Finance')">💰 Finance</button>
+          <button class="subject-btn" onclick="selectSubject('Marketing')">📢 Marketing</button>
+          <button class="subject-btn" onclick="selectSubject('Business Economics')">📈 Business Economics</button>
+          <button class="subject-btn" onclick="selectSubject('Other')">📚 Other</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Room Selection Screen -->
+    <div id="roomScreen" class="screen">
+      <div class="container">
+        <h2>Study Room</h2>
+        <div class="room-options">
+          <button class="btn btn-success" onclick="goToCreateRoom()">➕ Create New Room</button>
+          <button class="btn btn-info" onclick="goToJoinRoom()">🔗 Join Existing Room</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Room Screen -->
+    <div id="createRoomScreen" class="screen">
+      <div class="container">
+        <h2>Create Study Room</h2>
+        <div class="form-group">
+          <label>You will be the Admin of this room</label>
+          <p>Your Name: <strong id="displayName"></strong></p>
+          <p>Subject: <strong id="displaySubject"></strong></p>
+        </div>
+        <button class="btn btn-primary" onclick="createRoom()">Create Room</button>
+        <button class="btn btn-secondary" onclick="goToRoomScreen()">Back</button>
+      </div>
+    </div>
+
+    <!-- Join Room Screen -->
+    <div id="joinRoomScreen" class="screen">
+      <div class="container">
+        <h2>Join Study Room</h2>
+        <input type="text" id="roomCode" placeholder="Enter room code" class="input-field">
+        <button class="btn btn-primary" onclick="joinRoom()">Join Room</button>
+        <button class="btn btn-secondary" onclick="goToRoomScreen()">Back</button>
+      </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminScreen" class="screen">
+      <div class="container">
+        <h2>Admin Dashboard</h2>
+        <div class="room-code-display">
+          <p>Room Code:</p>
+          <div class="code-box" id="roomCodeDisplay"></div>
+          <button class="btn btn-secondary" onclick="copyRoomCode()">📋 Copy Code</button>
+        </div>
+
+        <div class="admin-section">
+          <h3>Set Focus Timer</h3>
+          <div class="timer-controls">
+            <input type="number" id="timerDuration" min="25" value="25" class="input-field">
+            <button class="btn btn-primary" onclick="startTimer()">⏱️ Start Timer</button>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <h3>📨 Join Requests</h3>
+          <div id="joinRequestsList" class="requests-list">
+            <p>No join requests yet</p>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <h3>Group Status</h3>
+          <div id="groupStatus" class="group-status">
+            <div class="group-info">
+              <h4>Group 1</h4>
+              <p id="group1Count">0 members</p>
+            </div>
+            <div class="group-info">
+              <h4>Group 2</h4>
+              <p id="group2Count">0 members</p>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-danger" onclick="leaveRoom()">Leave Room</button>
+      </div>
+    </div>
+
+    <!-- Study Room Screen -->
+    <div id="studyRoomScreen" class="screen">
+      <div class="container">
+        <div class="study-header">
+          <h2>Study Session</h2>
+          <p id="groupLabel"></p>
+        </div>
+
+        <div class="timer-display" id="timerDisplay">
+          <div id="timerValue">25:00</div>
+        </div>
+
+        <div class="main-content">
+          <!-- Participants -->
+          <div class="section">
+            <h3>👥 Group Members</h3>
+            <div id="membersList" class="members-list"></div>
+          </div>
+
+          <!-- AI Study Assistant -->
+          <div class="section">
+            <h3>🤖 AI Study Assistant</h3>
+            <div id="assistantChat" class="chat-box">
+              <div class="chat-message assistant">Hi! Ask me any study-related questions about your subject.</div>
+            </div>
+            <div class="chat-input-group">
+              <input type="text" id="assistantQuestion" placeholder="Ask a study question..." class="input-field">
+              <button class="btn btn-primary" onclick="askAssistant()">Ask</button>
+            </div>
+          </div>
+
+          <!-- Doubt Pulse -->
+          <div class="section">
+            <h3>❓ Doubt Pulse</h3>
+            <div class="doubt-buttons">
+              <button class="btn btn-doubt" onclick="sendDoubtSignal('🙋 Need Help')">🙋 Need Help</button>
+              <button class="btn btn-doubt" onclick="sendDoubtSignal('❓ I Have a Doubt')">❓ Doubt</button>
+              <button class="btn btn-doubt" onclick="sendDoubtSignal('💬 Ready to Discuss')">💬 Discuss</button>
+            </div>
+            <div id="doubtFeed" class="doubt-feed"></div>
+          </div>
+
+          <!-- Voice Messages -->
+          <div class="section">
+            <h3>🎙️ Group Chat</h3>
+            <div id="voiceMessages" class="messages-box"></div>
+            <div class="message-input-group">
+              <input type="text" id="voiceMessage" placeholder="Send a message to your group..." class="input-field">
+              <button class="btn btn-primary" onclick="sendVoiceMessage()">Send</button>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-danger" onclick="leaveRoom()">Exit Study Room</button>
+      </div>
+    </div>
+
+    <!-- Pending Screen -->
+    <div id="pendingScreen" class="screen">
+      <div class="container center-content">
+        <h2>⏳ Waiting for Admin Approval</h2>
+        <p>Your join request has been sent to the admin.</p>
+        <p>Please wait for approval to enter the study room.</p>
+        <button class="btn btn-secondary" onclick="goToWelcome()">Back to Welcome</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global state
+    let currentUser = {
+      name: null,
+      subject: null,
+      room: null,
+      group: null,
+      isAdmin: false,
+      userId: Math.random().toString(36).substring(2, 9)
+    };
+
+    let allRooms = {};
+    let timerInterval = null;
+
+    // Screen navigation
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(screen => {
+        screen.classList.remove('active');
+      });
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    function goToWelcome() {
+      showScreen('welcomeScreen');
+    }
+
+    function goToNameEntry() {
+      showScreen('nameScreen');
+    }
+
+    function goToSubjectSelection() {
+      const name = document.getElementById('userName').value.trim();
+      if (!name) {
+        alert('Please enter your name');
+        return;
+      }
+      currentUser.name = name;
+      showScreen('subjectScreen');
+    }
+
+    function selectSubject(subject) {
+      currentUser.subject = subject;
+      goToRoomScreen();
+    }
+
+    function goToRoomScreen() {
+      showScreen('roomScreen');
+    }
+
+    function goToCreateRoom() {
+      document.getElementById('displayName').textContent = currentUser.name;
+      document.getElementById('displaySubject').textContent = currentUser.subject;
+      showScreen('createRoomScreen');
+    }
+
+    function goToJoinRoom() {
+      showScreen('joinRoomScreen');
+    }
+
+    // Create room
+    function createRoom() {
+      const roomCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      
+      allRooms[roomCode] = {
+        code: roomCode,
+        admin: currentUser.userId,
+        adminName: currentUser.name,
+        subject: currentUser.subject,
+        group1: { members: [{ id: currentUser.userId, name: currentUser.name }], admin: currentUser.userId },
+        group2: { members: [] },
+        joinRequests: [],
+        timerDuration: 25,
+        timerRunning: false,
+        createdAt: new Date(),
+        messages: {},
+        doubts: {}
+      };
+
+      currentUser.room = roomCode;
+      currentUser.isAdmin = true;
+      currentUser.group = 'group1';
+
+      document.getElementById('roomCodeDisplay').textContent = roomCode;
+      document.getElementById('group1Count').textContent = '1 member';
+      document.getElementById('group2Count').textContent = '0 members';
+      
+      showScreen('adminScreen');
+    }
+
+    // Join room
+    function joinRoom() {
+      const roomCode = document.getElementById('roomCode').value.trim().toUpperCase();
+      if (!roomCode) {
+        alert('Please enter a room code');
+        return;
+      }
+
+      if (!allRooms[roomCode]) {
+        alert('Room not found!');
+        return;
+      }
+
+      const room = allRooms[roomCode];
+      
+      // Add join request
+      room.joinRequests.push({
+        userId: currentUser.userId,
+        userName: currentUser.name,
+        subject: currentUser.subject,
+        timestamp: new Date()
+      });
+
+      currentUser.room = roomCode;
+      showScreen('pendingScreen');
+      
+      // Alert admin
+      alert(`Admin: ${room.adminName}, ${currentUser.name} wants to join!`);
+    }
+
+    // Admin approve
+    function approveJoin(userId) {
+      const room = allRooms[currentUser.room];
+      const request = room.joinRequests.find(r => r.userId === userId);
+      
+      if (!request) return;
+
+      // Assign to group based on count
+      if (room.group1.members.length <= room.group2.members.length) {
+        room.group1.members.push({ id: userId, name: request.userName });
+      } else {
+        room.group2.members.push({ id: userId, name: request.userName });
+      }
+
+      room.joinRequests = room.joinRequests.filter(r => r.userId !== userId);
+      
+      alert(`${request.userName} has been approved!`);
+      updateJoinRequests();
+      updateGroupStatus();
+    }
+
+    // Admin reject
+    function rejectJoin(userId) {
+      const room = allRooms[currentUser.room];
+      room.joinRequests = room.joinRequests.filter(r => r.userId !== userId);
+      alert('Join request rejected');
+      updateJoinRequests();
+    }
+
+    function updateJoinRequests() {
+      const room = allRooms[currentUser.room];
+      const list = document.getElementById('joinRequestsList');
+      
+      if (room.joinRequests.length === 0) {
+        list.innerHTML = '<p>No join requests yet</p>';
+        return;
+      }
+
+      list.innerHTML = room.joinRequests.map((request, idx) => `
+        <div class="request-item">
+          <div class="request-info">
+            <p><strong>${request.userName}</strong></p>
+            <p>Subject: ${request.subject}</p>
+          </div>
+          <div class="request-buttons">
+            <button class="btn-approve" onclick="approveJoin('${request.userId}')">✅ Approve</button>
+            <button class="btn-reject" onclick="rejectJoin('${request.userId}')">❌ Reject</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateGroupStatus() {
+      const room = allRooms[currentUser.room];
+      document.getElementById('group1Count').textContent = `${room.group1.members.length} member${room.group1.members.length !== 1 ? 's' : ''}`;
+      document.getElementById('group2Count').textContent = `${room.group2.members.length} member${room.group2.members.length !== 1 ? 's' : ''}`;
+    }
+
+    // Timer
+    function startTimer() {
+      const duration = parseInt(document.getElementById('timerDuration').value);
+      if (duration < 25) {
+        alert('Minimum timer duration is 25 minutes');
+        return;
+      }
+
+      let remaining = duration * 60;
+      
+      const updateTimer = () => {
+        const minutes = Math.floor(remaining / 60);
+        const seconds = remaining % 60;
+        document.getElementById('timerValue').textContent = 
+          `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        if (remaining > 0) {
+          remaining--;
+          timerInterval = setTimeout(updateTimer, 1000);
+        }
+      };
+
+      updateTimer();
+      alert('Timer started!');
+    }
+
+    // Copy room code
+    function copyRoomCode() {
+      const code = currentUser.room;
+      navigator.clipboard.writeText(code).then(() => {
+        alert(`Room code copied: ${code}`);
+      });
+    }
+
+    // Voice messages
+    function sendVoiceMessage() {
+      const input = document.getElementById('voiceMessage');
+      const message = input.value.trim();
+      if (!message) return;
+
+      addMessageToChat(currentUser.name, message);
+      input.value = '';
+    }
+
+    function addMessageToChat(userName, message) {
+      const messagesBox = document.getElementById('voiceMessages');
+      const messageItem = document.createElement('div');
+      messageItem.className = 'message-item';
+      messageItem.innerHTML = `
+        <div class="user-name">${userName}</div>
+        <div class="message-text">${message}</div>
+      `;
+      messagesBox.appendChild(messageItem);
+      messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
+
+    // AI Assistant
+    function askAssistant() {
+      const input = document.getElementById('assistantQuestion');
+      const question = input.value.trim().toLowerCase();
+      if (!question) return;
+
+      const chatBox = document.getElementById('assistantChat');
+      const userMsg = document.createElement('div');
+      userMsg.className = 'chat-message user';
+      userMsg.textContent = `You: ${input.value}`;
+      chatBox.appendChild(userMsg);
+
+      const responses = {
+        'demand': 'Demand is the quantity of goods or services that consumers are willing and able to purchase at various price levels.',
+        'differentiation': 'Differentiation is a calculus concept where we find the rate of change of a function.',
+        'calculus': 'Calculus is a branch of mathematics that studies change and motion.',
+        'help': 'I\'m here to help! Ask me about your study subject.',
+      };
+
+      let answer = 'That\'s a great question! Try breaking it down into smaller parts.';
+      for (let key in responses) {
+        if (question.includes(key)) {
+          answer = responses[key];
+          break;
+        }
+      }
+
+      const assistantMsg = document.createElement('div');
+      assistantMsg.className = 'chat-message assistant';
+      assistantMsg.textContent = `🤖 Assistant: ${answer}`;
+      chatBox.appendChild(assistantMsg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      input.value = '';
+    }
+
+    // Doubt pulse
+    function sendDoubtSignal(signal) {
+      addDoubtSignal(currentUser.name, signal);
+    }
+
+    function addDoubtSignal(userName, signal) {
+      const feed = document.getElementById('doubtFeed');
+      const item = document.createElement('div');
+      item.className = 'doubt-item';
+      item.textContent = `${userName}: ${signal}`;
+      feed.appendChild(item);
+      feed.scrollTop = feed.scrollHeight;
+    }
+
+    // Leave room
+    function leaveRoom() {
+      if (timerInterval) clearTimeout(timerInterval);
+      currentUser.room = null;
+      currentUser.group = null;
+      currentUser.isAdmin = false;
+      goToWelcome();
+    }
+
+    // Allow Enter key
+    document.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        const activeId = document.activeElement.id;
+        if (activeId === 'userName') goToSubjectSelection();
+        else if (activeId === 'roomCode') joinRoom();
+        else if (activeId === 'assistantQuestion') askAssistant();
+        else if (activeId === 'voiceMessage') sendVoiceMessage();
+      }
+    });
+
+    // Set admin dashboard timer update
+    setInterval(() => {
+      if (currentUser.isAdmin && currentUser.room && allRooms[currentUser.room]) {
+        updateJoinRequests();
+      }
+    }, 1000);
+  </script>
+</body>
+</html>
